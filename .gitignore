@@ -14,4 +14,4 @@ Cargo.lock
 
 /target
 
-src/day1.txt
+src/day*.txt
