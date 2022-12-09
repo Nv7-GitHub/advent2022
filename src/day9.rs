@@ -116,5 +116,5 @@ pub fn day9() {
       }
     }
   }
-  println!("Part 1: {}", p1);
+  println!("Result: {}", p1); // make TAIL_LEN 1 for part 1, 9 for part 2
 }
