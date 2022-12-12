@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 struct Board {
   cells: Vec<Vec<u8>>, // byte representation, can use to compare heights too
 }
@@ -10,6 +12,9 @@ const OFFSETS: [Offset; 4] = [
   Offset(-1, 0),
   Offset(0, -1),
 ];
+
+#[derive(Eq, Hash, PartialEq)]
+struct Key(Pos);
 
 impl Board {
   fn can_go(&self, currpos: Pos, offrow: i32, offcol: i32) -> Option<Pos> {
@@ -37,7 +42,14 @@ impl Board {
     Some(newpos)
   }
 
-  fn iddfs(&self, maxdepth: usize, curr: &mut Vec<Pos>) -> Option<Vec<Pos>> {
+  fn iddfs(&self, maxdepth: usize, curr: &mut Vec<Pos>, mem: &mut HashMap<Key, usize>) -> Option<Vec<Pos>> {
+    let key = Key(curr[curr.len()-1]);
+    if let Some(depth) = mem.get(&key) {
+      if *depth >= maxdepth {
+        return None;
+      }
+    }
+
     if maxdepth == 0 {
       return None;
     }
@@ -60,7 +72,7 @@ impl Board {
         
         // Go deeper
         curr.push(newpos);
-        if let Some(result) = self.iddfs(maxdepth-1, curr) {
+        if let Some(result) = self.iddfs(maxdepth-1, curr, mem) {
           return Some(result); // Success!
         }
         curr.pop();
@@ -68,11 +80,14 @@ impl Board {
         // Continue
       }
     }
+
+    // Failure
+    mem.insert(key, maxdepth);
     None
   }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Hash, Eq)]
 struct Pos(usize, usize); // Row, col
 
 pub fn day12() {
@@ -95,9 +110,10 @@ pub fn day12() {
 
   // BFS
   let mut i = 1;
+  let mut memo = HashMap::new();
   loop {
     println!("Depth {}", i);
-    if let Some(res) = board.iddfs(i, &mut vec![start]) {
+    if let Some(res) = board.iddfs(i, &mut vec![start], &mut memo) {
       println!("Length: {}", res.len() - 1);
       break;
     }
