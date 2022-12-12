@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-const PART2: bool = true;
+const PART2: bool = false;
 
 struct Board {
   cells: Vec<Vec<u8>>, // byte representation, can use to compare heights too
@@ -118,11 +118,11 @@ pub fn day12() {
   // BFS
   let mut lengths = Vec::new();
   let mut memo = HashMap::new();
-  for start in starts {
+  for (i, start) in starts.iter().enumerate() {
+    println!("Start {}", i+1);
     let mut i = 1;
     loop {
-      println!("Depth {}", i);
-      if let Some(res) = board.iddfs(i, &mut vec![start], &mut memo) {
+      if let Some(res) = board.iddfs(i, &mut vec![*start], &mut memo) {
         lengths.push(res.len() - 1);
         break;
       }
