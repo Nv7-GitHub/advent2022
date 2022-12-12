@@ -1,4 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
+
+const PART2: bool = true;
 
 struct Board {
   cells: Vec<Vec<u8>>, // byte representation, can use to compare heights too
@@ -94,7 +96,7 @@ pub fn day12() {
   let mut board = Board{
     cells: Vec::new(),
   };
-  let mut start = Pos(0, 0);
+  let mut starts = vec![];
 
   // Parse
   let inp = include_str!("day12.txt");
@@ -103,20 +105,30 @@ pub fn day12() {
     if line.contains("S") {
       let posrow = board.cells.len() - 1;
       let poscol = line.find("S").unwrap();
-      start = Pos(posrow, poscol);
-      board.cells[posrow][poscol] = b'{'; // after z
+      starts.push(Pos(posrow, poscol));
+      board.cells[posrow][poscol] = b'a'; // Equivalent to "a"
+    }
+    if PART2 && line.contains("a") {
+      let posrow = board.cells.len() - 1;
+      let poscol = line.find("a").unwrap();
+      starts.push(Pos(posrow, poscol));
     }
   }
 
   // BFS
-  let mut i = 1;
+  let mut lengths = Vec::new();
   let mut memo = HashMap::new();
-  loop {
-    println!("Depth {}", i);
-    if let Some(res) = board.iddfs(i, &mut vec![start], &mut memo) {
-      println!("Length: {}", res.len() - 1);
-      break;
+  for start in starts {
+    let mut i = 1;
+    loop {
+      println!("Depth {}", i);
+      if let Some(res) = board.iddfs(i, &mut vec![start], &mut memo) {
+        lengths.push(res.len() - 1);
+        break;
+      }
+      i += 1;
     }
-    i += 1;
   }
+
+  println!("Shortest: {}", *lengths.iter().min().unwrap());
 }
