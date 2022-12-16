@@ -1,9 +1,9 @@
-const OFF: i32 = 3;
-const WIDTH: usize = 29;
-const ROW_CHECK: i32 = 10;
+const OFF: i32 = 511300;
+const WIDTH: usize = 8000000;
+const ROW_CHECK: i32 = 200000;
 
 // Part 2
-const P2_MAX: usize = 20;
+const P2_MAX: i32 = 400000; // val + 1
 
 #[derive(Debug)]
 struct Pos(i32, i32); // row, col
@@ -12,6 +12,7 @@ struct Pos(i32, i32); // row, col
 struct Sensor {
   pos: Pos,
   beacon: Pos,
+  dist: i32,
 }
 
 #[derive(Default, Copy, Clone, Debug)]
@@ -34,12 +35,13 @@ pub fn day15() {
     sensors.push(Sensor {
       pos: Pos(sposvals[1], sposvals[0]),
       beacon: Pos(bposvals[1], bposvals[0]),
+      dist: (sposvals[1] - bposvals[1]).abs() + (sposvals[0] - bposvals[0]).abs(),
     });
   }
 
   // Fill row
   let mut row = vec![Cell::default(); WIDTH];
-  for sensor in sensors {
+  for sensor in sensors.iter() {
     let dist = (sensor.pos.0 - sensor.beacon.0).abs() + (sensor.pos.1 - sensor.beacon.1).abs();
 
     // Check if sensor or beacon are in row
@@ -65,4 +67,23 @@ pub fn day15() {
 
   // Part 1
   println!("Part 1: {}", row.iter().filter(|x| x.filled && !x.beacon /* && !x.sensor */).count());
+
+  // Part 2
+  sensors.sort_by_key(|x| x.dist);
+  for row in 0..P2_MAX {
+    println!("Row: {}", row);
+    for col in 0..P2_MAX {
+      let mut filled = false;
+      for sensor in sensors.iter() {
+        if (row - sensor.pos.0).abs() + (col - sensor.pos.1).abs() <= sensor.dist {
+          filled = true;
+          break;
+        }
+      }
+      if !filled {
+        println!("Part 2: {}", col * P2_MAX + row);
+        panic!("DONE");
+      }
+    }
+  }
 } 
