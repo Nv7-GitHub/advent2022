@@ -14,8 +14,8 @@ const ROCKS: [[[bool; 4]; 4]; 5] = [
   [
     [false, false, true, false],
     [false, false, true, false],
-    [false, false, true, false],
     [true, true, true, false],
+    [false, false, false, false],
   ],
   [
     [true, false, false, false],
@@ -31,7 +31,7 @@ const ROCKS: [[[bool; 4]; 4]; 5] = [
   ],
 ];
 const WIDTH: usize = 7;
-const HEIGHT: usize = 15;
+const HEIGHT: usize = 5000;
 
 struct Board {
   board: [[bool; WIDTH]; HEIGHT],
@@ -145,7 +145,7 @@ pub fn day17() {
   let mut count = 0;
   let mut pushcnt = 0;
 
-  while count < 4 {
+  while count < 1000000000000 {
     // Add rock
     let rock = ROCKS[count % ROCKS.len()];
     let off = Pos(board.top() - 3 - height(rock) + 1, 2); // -3 so 3 above, +1 cancels out extra num in rock height
@@ -161,14 +161,14 @@ pub fn day17() {
     // Simulate
 
     loop {
-      println!("\n\n");
-      println!("gravity");
-      board.print(&curr);
-      println!("\n\n");
+      //println!("\n\n");
+      //println!("gravity");
+      //board.print(&curr);
+      //println!("\n\n");
 
       // Push dir
       let dir = offs[pushcnt % offs.len()];
-      println!("dir: {:?} {}", dir, pushcnt);
+      //println!("dir: {:?} {}", dir, pushcnt);
       let mut new = curr.clone();
       for v in new.iter_mut() {
         v.0 += dir.0;
@@ -176,11 +176,11 @@ pub fn day17() {
       }
       pushcnt += 1;
       if board.can_move(&new) {
-        println!("move");
+        //println!("move");
         curr = new.clone();
       }
 
-      board.print(&curr);
+      //board.print(&curr);
 
       // Move down
       let mut new = curr.clone();
@@ -203,5 +203,5 @@ pub fn day17() {
     }
   }
 
-  println!("Day 17: {}", board.cnt());
+  println!("Part 1: {}", board.cnt());
 }
